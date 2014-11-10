@@ -1,4 +1,4 @@
-# Regional Content
+# Localized Content
 
 Show different content or redirect to another location based on user's location
 
