@@ -46,6 +46,12 @@ class LocalizedContent {
 		if ( $this->timezone )
 			$this->content = $this->choose_content( $atts );
 
+		// Ensure `default` is lowercase
+		if ( isset( $atts['Default'] ) ) {
+			$atts['default'] = $atts['Default'];
+			unset( $atts['Default'] );
+		}
+
 		// If no match but default exists, do it
 		if ( !$this->content && isset( $atts['default'] ) )
 			$this->content = $atts['default'];
@@ -118,7 +124,6 @@ class LocalizedContent {
 				return $this->content;
 
 			case 'include':
-				// -- $sql = "SELECT post_content FROM $_GLOBALS['wpdb']->posts WHERE ID = '$this->content' OR post_name = '$this->content' LIMIT 1";
 				$sql = 'SELECT post_content FROM `' . $GLOBALS['wpdb']->posts . '` WHERE ID = "' . $this->content . '" OR post_name = "' . $this->content . '" LIMIT 1';
 				$content = $GLOBALS['wpdb']->get_var( $sql );
 				return do_shortcode($content);

@@ -10,7 +10,6 @@
  * License: GPL2
  */
 
-session_start();
 require 'LocalizedContent.php';
 
 // Register shortcode for each action
