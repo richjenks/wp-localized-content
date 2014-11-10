@@ -11,3 +11,5 @@ Regional Content has three shortcodes:
 - **`[regional-redirect]`**: Redirect to another location
 
 To specify an action for a region, add its timezone as an attribute and the result as its value.
+
+Note that it will use the first match, so put the most specific options first, e.g. "Europe_London" before "Europe".
