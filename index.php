@@ -10,9 +10,10 @@
  * License: GPL2
  */
 
+session_start();
 require 'LocalizedContent.php';
 
-// Register shortcodes
+// Register shortcode for each action
 $shortcodes = array( 'text', 'include', 'redirect' );
 foreach ( $shortcodes as $shortcode ) {
 	\add_shortcode( 'localized-' . $shortcode, function ( $atts ) use ( $shortcode ) {

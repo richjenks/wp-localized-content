@@ -39,8 +39,8 @@ class LocalizedContent {
 		// One of three actions
 		$this->action = $action;
 
-		// Get user's timezone
-		$this->timezone = $this->get_timezone();
+		// Get user's timezone from cookie or API
+		$this->timezone = ( isset( $_SESSION['timezone'] ) ) ? $_SESSION['timezone'] : $this->get_timezone();
 
 		// If timezone found, get matching attribute value
 		if ( $this->timezone )
@@ -55,12 +55,25 @@ class LocalizedContent {
 	/**
 	 * get_timezone
 	 *
+	 * Determines the user's timezone using API
+	 *
 	 * @return string User's timezone, slashes swapped for underscores
 	 */
 
 	private function get_timezone() {
+
 		$data = json_decode( file_get_contents( 'http://ip-api.com/json/' . $_SERVER['REMOTE_ADDR'] ) );
-		return ( $data->status === 'success' ) ? $data->timezone : false;
+
+		if ( $data->status === 'success' ) {
+
+			// API call was succesful so store & return
+			$_SESSION['timezone'] = $data->timezone;
+			return $data->timezone;
+
+		} else {
+			return false;
+		}
+
 	}
 
 	/**
