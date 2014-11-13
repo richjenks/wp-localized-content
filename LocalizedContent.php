@@ -171,7 +171,7 @@ class LocalizedContent {
 	public function debug() {
 		echo '<pre style="color: #111; background: #ddd;">';
 		echo '<b>Attributes</b><br>';
-		var_dump( htmlentities( $this->atts ) );
+		var_dump( $this->atts );
 		echo '<b>Action</b><br>';
 		var_dump( htmlentities( $this->action ) );
 		echo '<b>Timezone</b><br>';
