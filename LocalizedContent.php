@@ -11,6 +11,12 @@ namespace RichJenks\LocalizedContent;
 class LocalizedContent {
 
 	/**
+	 * @var array Shortcode attributes
+	 */
+
+	private $atts;
+
+	/**
 	 * @var string 'echo', 'include' or 'redirect'
 	 */
 
@@ -36,7 +42,7 @@ class LocalizedContent {
 
 	public function __construct( $atts, $action ) {
 
-		// One of three actions
+		$this->atts   = $atts;
 		$this->action = $action;
 
 		// Get user's timezone from cookie or API
@@ -164,6 +170,8 @@ class LocalizedContent {
 
 	public function debug() {
 		echo '<pre style="background: #ddd;">';
+		echo '<b>Attributes</b>';
+		var_dump( $this->atts );
 		echo '<b>Action</b>';
 		var_dump( $this->action );
 		echo '<b>Timezone</b>';
