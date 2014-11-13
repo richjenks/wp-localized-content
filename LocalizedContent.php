@@ -134,4 +134,45 @@ class LocalizedContent {
 		}
 	}
 
+	/**
+	 * is_flag
+	 *
+	 * Determines whether a flag is enabled
+	 * A flag being an attr without a val
+	 *
+	 * @param string $flag Name of flag
+	 * @param array $atts Shortcode attributes
+	 *
+	 * @return bool True if flag is given, false if not
+	 */
+
+	public function is_flag( $flag, $atts ) {
+		$is = false;
+		foreach ( $atts as $key => $value ) {
+			if ( is_int( $key ) && $value === $flag ) {
+				$is = true;
+			}
+		}
+		return $is;
+	}
+
+	/**
+	 * debug
+	 *
+	 * Outputs debug infomation
+	 */
+
+	public function debug() {
+		echo '<pre style="background: #ddd;">';
+		echo '<b>Action</b>';
+		var_dump( $this->action );
+		echo '<b>Timezone</b>';
+		var_dump( $this->timezone );
+		echo '<b>Content</b>';
+		var_dump( $this->content );
+		echo '<b>Output</b>';
+		var_dump( $this->get_content() );
+		echo '</pre>';
+	}
+
 }

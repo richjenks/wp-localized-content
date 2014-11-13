@@ -17,6 +17,6 @@ $shortcodes = array( 'text', 'include', 'redirect' );
 foreach ( $shortcodes as $shortcode ) {
 	\add_shortcode( 'localized-' . $shortcode, function ( $atts ) use ( $shortcode ) {
 		$region = new RichJenks\LocalizedContent\LocalizedContent( $atts, $shortcode );
-		return $region->get_content();
+		return ( $region->is_flag( 'debug', $atts ) ) ? $region->debug() : $region->get_content();
 	} );
 }
