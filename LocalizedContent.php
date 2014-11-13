@@ -169,16 +169,16 @@ class LocalizedContent {
 	 */
 
 	public function debug() {
-		echo '<pre style="background: #ddd;">';
-		echo '<b>Attributes</b>';
+		echo '<pre style="color: #111; background: #ddd;">';
+		echo '<b>Attributes</b><br>';
 		var_dump( $this->atts );
-		echo '<b>Action</b>';
+		echo '<b>Action</b><br>';
 		var_dump( $this->action );
-		echo '<b>Timezone</b>';
+		echo '<b>Timezone</b><br>';
 		var_dump( $this->timezone );
-		echo '<b>Content</b>';
+		echo '<b>Content</b><br>';
 		var_dump( $this->content );
-		echo '<b>Output</b>';
+		echo '<b>Output</b><br>';
 		var_dump( $this->get_content() );
 		echo '</pre>';
 	}
