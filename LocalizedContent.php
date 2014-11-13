@@ -171,15 +171,15 @@ class LocalizedContent {
 	public function debug() {
 		echo '<pre style="color: #111; background: #ddd;">';
 		echo '<b>Attributes</b><br>';
-		var_dump( $this->atts );
+		var_dump( htmlentities( $this->atts ) );
 		echo '<b>Action</b><br>';
-		var_dump( $this->action );
+		var_dump( htmlentities( $this->action ) );
 		echo '<b>Timezone</b><br>';
-		var_dump( $this->timezone );
+		var_dump( htmlentities( $this->timezone ) );
 		echo '<b>Content</b><br>';
-		var_dump( $this->content );
+		var_dump( htmlentities( $this->content ) );
 		echo '<b>Output</b><br>';
-		var_dump( $this->get_content() );
+		var_dump( htmlentities( $this->get_content() ) );
 		echo '</pre>';
 	}
 
