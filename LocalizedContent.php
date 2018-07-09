@@ -1,37 +1,49 @@
 <?php
 
 /**
+ * Plugin Name: Localized Content
+ * Plugin URI: https://github.com/richjenks/wp-localized-content
+ * Description: Show different content or redirect to another URL based on the user's location
+ * Version: 1.1.0
+ * Author: Rich Jenks <rich@richjenks.com>
+ * Author URI: http://richjenks.com
+ * License: GPL2
+ */
+
+// Register shortcode for each action
+$shortcodes = array( 'text', 'include', 'redirect' );
+foreach ( $shortcodes as $shortcode ) {
+	\add_shortcode( 'localized-' . $shortcode, function ( $atts ) use ( $shortcode ) {
+		$region = new LocalizedContent( $atts, $shortcode );
+		return ( $atts['debug'] ) ? $region->debug() : $region->get_content();
+	} );
+}
+
+/**
  * LocalizedContent
  *
  * Determines user's timezone and provides interface for matching conditions
  */
-
-namespace RichJenks\LocalizedContent;
-
 class LocalizedContent {
 
 	/**
 	 * @var array Shortcode attributes
 	 */
-
 	private $atts;
 
 	/**
 	 * @var string 'echo', 'include' or 'redirect'
 	 */
-
 	private $action;
 
 	/**
 	 * @var string User's timezone, slashes swapped for underscores
 	 */
-
 	private $timezone = false;
 
 	/**
 	 * @var string Content of attr option to be returned
 	 */
-
 	private $content = false;
 
 	/**
@@ -39,14 +51,14 @@ class LocalizedContent {
 	 *
 	 * @param string $action 'echo', 'include' or 'redirect'
 	 */
-
 	public function __construct( $atts, $action ) {
 
 		$this->atts   = $atts;
 		$this->action = $action;
 
-		// Get user's timezone from cookie or API
-		$this->timezone = ( isset( $_SESSION['timezone'] ) ) ? $_SESSION['timezone'] : $this->get_timezone();
+		// Get user's timezone from shortcode, cookie or API
+		if ($atts['timezone']) $this->timezone = $atts['timezone'];
+		else $this->timezone = ( isset( $_SESSION['timezone'] ) ) ? $_SESSION['timezone'] : $this->get_timezone();
 
 		// If timezone found, get matching attribute value
 		if ( $this->timezone )
@@ -71,7 +83,6 @@ class LocalizedContent {
 	 *
 	 * @return string User's timezone, slashes swapped for underscores
 	 */
-
 	private function get_timezone() {
 
 		$data = json_decode( file_get_contents( 'http://ip-api.com/json/' . $_SERVER['REMOTE_ADDR'] ) );
@@ -96,7 +107,6 @@ class LocalizedContent {
 	 * @param  array  $atts Shortcode attributes
 	 * @return string Value of the shortcode att matching user's timezone
 	 */
-
 	private function choose_content( $atts ) {
 
 		// Sanitize user's timezone
@@ -122,7 +132,6 @@ class LocalizedContent {
 	 *
 	 * @return string Content to be shown
 	 */
-
 	public function get_content() {
 		switch ( $this->action ) {
 
@@ -130,36 +139,13 @@ class LocalizedContent {
 				return $this->content;
 
 			case 'include':
-				$sql = 'SELECT post_content FROM `' . $GLOBALS['wpdb']->posts . '` WHERE ID = "' . $this->content . '" OR post_name = "' . $this->content . '" LIMIT 1';
-				$content = $GLOBALS['wpdb']->get_var( $sql );
-				return do_shortcode($content);
+				$post = get_post($this->content);
+				return do_shortcode($post->post_content);
 
 			case 'redirect':
-				if ( strlen( $this->content ) !== 0 ) return '<script>window.location = "' . $this->content . '";</script>';
+				return '<script>window.location = "' . $this->content . '";</script>';
 
 		}
-	}
-
-	/**
-	 * is_flag
-	 *
-	 * Determines whether a flag is enabled
-	 * A flag being an attr without a val
-	 *
-	 * @param string $flag Name of flag
-	 * @param array $atts Shortcode attributes
-	 *
-	 * @return bool True if flag is given, false if not
-	 */
-
-	public function is_flag( $flag, $atts ) {
-		$is = false;
-		foreach ( $atts as $key => $value ) {
-			if ( is_int( $key ) && $value === $flag ) {
-				$is = true;
-			}
-		}
-		return $is;
 	}
 
 	/**
@@ -167,7 +153,6 @@ class LocalizedContent {
 	 *
 	 * Outputs debug infomation
 	 */
-
 	public function debug() {
 		echo '<pre style="color: #111; background: #ddd;">';
 		echo '<b>Attributes</b><br>';
