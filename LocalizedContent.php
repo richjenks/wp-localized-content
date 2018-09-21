@@ -4,7 +4,7 @@
  * Plugin Name: Localized Content
  * Plugin URI: https://github.com/richjenks/wp-localized-content
  * Description: Show different content or redirect to another URL based on the user's location
- * Version: 1.1.0
+ * Version: 1.2.0
  * Author: Rich Jenks <rich@richjenks.com>
  * Author URI: http://richjenks.com
  * License: GPL2
@@ -15,7 +15,7 @@ $shortcodes = array( 'text', 'include', 'redirect' );
 foreach ( $shortcodes as $shortcode ) {
 	\add_shortcode( 'localized-' . $shortcode, function ( $atts ) use ( $shortcode ) {
 		$region = new LocalizedContent( $atts, $shortcode );
-		return ( $atts['debug'] ) ? $region->debug() : $region->get_content();
+		return $region->get_content();
 	} );
 }
 
@@ -57,8 +57,12 @@ class LocalizedContent {
 		$this->action = $action;
 
 		// Get user's timezone from shortcode, cookie or API
-		if ($atts['timezone']) $this->timezone = $atts['timezone'];
-		else $this->timezone = ( isset( $_SESSION['timezone'] ) ) ? $_SESSION['timezone'] : $this->get_timezone();
+		if ($atts['timezone'])
+			$this->timezone = $atts['timezone'];
+		elseif (isset($_COOKIE['STYXKEY_timezone']))
+			$this->timezone = $_COOKIE['STYXKEY_timezone'];
+		else
+			$this->timezone = $this->get_timezone();
 
 		// If timezone found, get matching attribute value
 		if ( $this->timezone )
@@ -90,7 +94,7 @@ class LocalizedContent {
 		if ( $data->status === 'success' ) {
 
 			// API call was succesful so store & return
-			$_SESSION['timezone'] = $data->timezone;
+			setcookie('STYXKEY_timezone', $data->timezone, time()+604800, '/','', 0);
 			return $data->timezone;
 
 		} else {
@@ -146,26 +150,6 @@ class LocalizedContent {
 				return '<script>window.location = "' . $this->content . '";</script>';
 
 		}
-	}
-
-	/**
-	 * debug
-	 *
-	 * Outputs debug infomation
-	 */
-	public function debug() {
-		echo '<pre style="color: #111; background: #ddd;">';
-		echo '<b>Attributes</b><br>';
-		var_dump( $this->atts );
-		echo '<b>Action</b><br>';
-		var_dump( htmlentities( $this->action ) );
-		echo '<b>Timezone</b><br>';
-		var_dump( htmlentities( $this->timezone ) );
-		echo '<b>Content</b><br>';
-		var_dump( htmlentities( $this->content ) );
-		echo '<b>Output</b><br>';
-		var_dump( htmlentities( $this->get_content() ) );
-		echo '</pre>';
 	}
 
 }
