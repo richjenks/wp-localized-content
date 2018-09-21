@@ -13,7 +13,7 @@
 // Register shortcode for each action
 $shortcodes = array( 'text', 'include', 'redirect' );
 foreach ( $shortcodes as $shortcode ) {
-	\add_shortcode( 'localized-' . $shortcode, function ( $atts ) use ( $shortcode ) {
+	add_shortcode( 'localized-' . $shortcode, function ( $atts ) use ( $shortcode ) {
 		$region = new LocalizedContent( $atts, $shortcode );
 		return $region->get_content();
 	} );
@@ -88,19 +88,11 @@ class LocalizedContent {
 	 * @return string User's timezone, slashes swapped for underscores
 	 */
 	private function get_timezone() {
-
 		$data = json_decode( file_get_contents( 'http://ip-api.com/json/' . $_SERVER['REMOTE_ADDR'] ) );
-
 		if ( $data->status === 'success' ) {
-
-			// API call was succesful so store & return
 			setcookie('STYXKEY_timezone', $data->timezone, time()+604800, '/','', 0);
 			return $data->timezone;
-
-		} else {
-			return false;
-		}
-
+		} else { return false; }
 	}
 
 	/**
@@ -138,17 +130,13 @@ class LocalizedContent {
 	 */
 	public function get_content() {
 		switch ( $this->action ) {
-
 			case 'text':
 				return $this->content;
-
 			case 'include':
 				$post = get_post($this->content);
 				return do_shortcode($post->post_content);
-
 			case 'redirect':
 				return '<script>window.location = "' . $this->content . '";</script>';
-
 		}
 	}
 
