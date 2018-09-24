@@ -47,6 +47,11 @@ class LocalizedContent {
 	private $content = false;
 
 	/**
+	 * @var string Name of the cookie
+	 */
+	private $cookie = 'STYXKEY_timezone';
+
+	/**
 	 * __construct
 	 *
 	 * @param string $action 'echo', 'include' or 'redirect'
@@ -59,8 +64,8 @@ class LocalizedContent {
 		// Get user's timezone from shortcode, cookie or API
 		if ($atts['timezone'])
 			$this->timezone = $atts['timezone'];
-		elseif (isset($_COOKIE['STYXKEY_timezone']))
-			$this->timezone = $_COOKIE['STYXKEY_timezone'];
+		elseif (isset($_COOKIE[$this->cookie]))
+			$this->timezone = $_COOKIE[$this->cookie];
 		else
 			$this->timezone = $this->get_timezone();
 
@@ -90,7 +95,7 @@ class LocalizedContent {
 	private function get_timezone() {
 		$data = json_decode( file_get_contents( 'http://ip-api.com/json/' . $_SERVER['REMOTE_ADDR'] ) );
 		if ( $data->status === 'success' ) {
-			setcookie('STYXKEY_timezone', $data->timezone, time()+604800, '/','', 0);
+			setcookie($this->cookie, $data->timezone, time()+604800, '/','', 0);
 			return $data->timezone;
 		} else { return false; }
 	}
