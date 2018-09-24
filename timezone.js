@@ -11,12 +11,7 @@ function setCookie(name, value, days) {
 }
 
 if (document.cookie.indexOf(cookie) < 0){
-	if (Intl.DateTimeFormat().resolvedOptions().timeZone) {
-		var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-	} else {
-		var timezone = "false";
-	}
-
+	var timezone = (typeof Intl === "object" ? Intl.DateTimeFormat().resolvedOptions().timeZone : "false");
 	setCookie(cookie, timezone, 1);
 	window.location.reload();
 }
