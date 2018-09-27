@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Localized Content
  * Plugin URI: https://github.com/richjenks/wp-localized-content
- * Description: Show different content or redirect to another URL based on the user's location
+ * Description: Show different content or redirect to another URL based on the user's timezone
  * Version: 1.3.1
  * Author: Rich Jenks <rich@richjenks.com>
  * Author URI: http://richjenks.com
@@ -19,10 +19,14 @@ foreach ($shortcodes as $shortcode) {
 	} );
 }
 
-// Enqueue script to determine timezone
-add_action('wp_enqueue_scripts', function () {
-	wp_enqueue_script('localized-content', plugin_dir_url(__FILE__) . 'timezone.js', ['jquery']);
-});
+// Script to determine timezone
+// May trigger a full page reload and `wp_enqueue_script()` runs too late
+add_action('wp_head', function () {
+	global $wp_version;
+	$src = plugin_dir_url(__FILE__) . 'timezone.js';
+	$tag = sprintf('<script src=%s?ver=%s></script>', $src, $wp_version);
+	echo $tag . PHP_EOL;
+}, 0);
 
 /**
  * LocalizedContent
