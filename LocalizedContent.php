@@ -4,7 +4,7 @@
  * Plugin Name: Localized Content
  * Plugin URI: https://github.com/richjenks/wp-localized-content
  * Description: Show different content or redirect to another URL based on the user's timezone
- * Version: 1.3.1
+ * Version: 1.4.0
  * Author: Rich Jenks <rich@richjenks.com>
  * Author URI: http://richjenks.com
  * License: GPL2
