@@ -1,39 +1,9 @@
 <?php
 
 /**
- * Plugin Name: Localized Content
- * Plugin URI: https://github.com/richjenks/wp-localized-content
- * Description: Show different content or redirect to another URL based on the user's timezone
- * Version: 1.4.0
- * Author: Rich Jenks <rich@richjenks.com>
- * Author URI: http://richjenks.com
- * License: GPL2
- */
-
-// Register shortcode for each action
-$shortcodes = ['text', 'include', 'redirect'];
-foreach ($shortcodes as $shortcode) {
-	add_shortcode('localized-' . $shortcode, function ($atts) use ($shortcode) {
-		$region = new LocalizedContent($atts, $shortcode);
-		return $region->get_content();
-	} );
-}
-
-// Script to determine timezone
-// May trigger a full page reload and `wp_enqueue_script()` runs too late
-add_action('wp_head', function () {
-	global $wp_version;
-	$src = plugin_dir_url(__FILE__) . 'timezone.js';
-	$tag = sprintf('<script src=%s?ver=%s></script>', $src, $wp_version);
-	echo $tag . PHP_EOL;
-}, 0);
-
-/**
- * LocalizedContent
- *
  * Determines user's timezone and provides interface for matching conditions
  */
-class LocalizedContent {
+class Localizer {
 
 	/**
 	 * @var array Shortcode attributes
@@ -58,7 +28,7 @@ class LocalizedContent {
 	/**
 	 * @var string Name of the cookie
 	 */
-	private $cookie = 'STYXKEY_timezone';
+	private $cookie;
 
 	/**
 	 * __construct
@@ -67,13 +37,18 @@ class LocalizedContent {
 	 */
 	public function __construct($atts, $action) {
 
+		// Let people override cookie name
+		global $localized_content_cookie;
+		$this->cookie = apply_filters('localized_content_cookie', $localized_content_cookie);
+
+		// Shortcode atts & action from shortcode registration
 		$this->atts   = $atts;
 		$this->action = $action;
 
 		// Get user's timezone from shortcode or cookie
 		if ($atts['timezone'])
 			$this->timezone = $atts['timezone'];
-		elseif (isset($_COOKIE[$this->cookie]))
+		elseif (!empty($_COOKIE[$this->cookie]))
 			$this->timezone = $_COOKIE[$this->cookie];
 
 		// If timezone found, get matching attribute value
@@ -135,7 +110,10 @@ class LocalizedContent {
 				$post = get_post($this->content);
 				return do_shortcode($post->post_content);
 			case 'redirect':
-				return '<script>window.location = "' . $this->content . '";</script>';
+				// Redirects are actually processed during the `wp` hook
+				// so don't need to return any content and can exit early
+				header('Location: ' . $this->content, true, 307);
+				die;
 		}
 	}
 

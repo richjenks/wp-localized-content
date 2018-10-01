@@ -44,6 +44,16 @@ This is especially powerful when you need multi-line content.
 
 Visitors in London will be taken to Google's UK site and everyone else will be take to Google's global site.
 
+## Filter
+
+`localized_content_cookie` filters the name of the cookie that stores the user's timezone:
+
+```php
+add_filter('localized_content_cookie', 'my_new_cookie_name');
+```
+
+> The default value `STYXKEY_timezone` was chosen for it's support with the [Pantheon](https://pantheon.io/) hosting provider.
+
 ## Testing
 
 If you need to test content you can override the timezone with the `timezone` shortcode attribute.
